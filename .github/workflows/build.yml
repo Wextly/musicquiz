@@ -36,9 +36,8 @@ jobs:
         run: |
           buildozer -v android debug
         env:
-          # Принудительно отключаем интерактивные запросы SDK
-          ANDROID_HOME: /home/runner/.buildozer/android/platform/android-sdk
-          ANDROID_NDK_HOME: /home/runner/.buildozer/android/platform/android-ndk-r25b
+          # Фиксируем пути, чтобы buildozer использовал свою директорию и скачал нужные build-tools
+          HOME: /home/runner
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
