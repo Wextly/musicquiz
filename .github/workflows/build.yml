@@ -34,8 +34,11 @@ jobs:
 
       - name: Run Buildozer
         run: |
-          # Автоматически принимаем лицензии SDK перед запуском сборки
-          yes | buildozer -v android debug
+          buildozer -v android debug
+        env:
+          # Принудительно отключаем интерактивные запросы SDK
+          ANDROID_HOME: /home/runner/.buildozer/android/platform/android-sdk
+          ANDROID_NDK_HOME: /home/runner/.buildozer/android/platform/android-ndk-r25b
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
