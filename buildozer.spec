@@ -9,6 +9,9 @@ package.name = musicphone
 # (str) Package domain (needed for android packaging)
 package.domain = org.musicphone
 
+# (str) Version of the application
+version = 0.1
+
 # (list) Source files to include (let it empty to include all files)
 source.include_exts = py,png,jpg,kv,atlas,mp3,wav,json
 
