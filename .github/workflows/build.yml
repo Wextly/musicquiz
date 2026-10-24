@@ -32,13 +32,28 @@ jobs:
           pip install --upgrade pip
           pip install cython==0.29.36 buildozer
 
-      - name: Accept Android SDK licenses automatically
+      - name: Setup Android SDK and Command Line Tools
         run: |
-          mkdir -p /home/runner/.buildozer/android/platform/android-sdk/licenses
-          echo "8933bad161af4178b1185d1a37fbf41ea5269c55" > /home/runner/.buildozer/android/platform/android-sdk/licenses/android-sdk-license
-          echo "d56f5187479451eabf01fb78af6dfcb131e6bbf9" >> /home/runner/.buildozer/android/platform/android-sdk/licenses/android-sdk-license
-          echo "24333f8a43b680d2301de932f462730f924number" >> /home/runner/.buildozer/android/platform/android-sdk/licenses/android-sdk-license
-          echo "84831b9409646a918e30573bab4c9c91346d8abd" >> /home/runner/.buildozer/android/platform/android-sdk/licenses/android-sdk-license
+          SDK_DIR="/home/runner/.buildozer/android/platform/android-sdk"
+          mkdir -p $SDK_DIR
+          
+          # Скачиваем актуальные Android Command Line Tools
+          wget -q https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O /tmp/cmdtools.zip
+          unzip -q /tmp/cmdtools.zip -d /tmp/cmdtools
+          
+          # Раскладываем по путям, которые ожидает buildozer
+          mkdir -p $SDK_DIR/cmdline-tools/latest
+          mv /tmp/cmdtools/cmdline-tools/* $SDK_DIR/cmdline-tools/latest/
+          
+          # Создаем симлинк для совместимости со старыми путями sdkmanager
+          ln -s $SDK_DIR/cmdline-tools/latest $SDK_DIR/tools
+
+          # Предзаписываем принятые лицензии
+          mkdir -p $SDK_DIR/licenses
+          echo "8933bad161af4178b1185d1a37fbf41ea5269c55" > $SDK_DIR/licenses/android-sdk-license
+          echo "d56f5187479451eabf01fb78af6dfcb131e6bbf9" >> $SDK_DIR/licenses/android-sdk-license
+          echo "24333f8a43b680d2301de932f462730f924number" >> $SDK_DIR/licenses/android-sdk-license
+          echo "84831b9409646a918e30573bab4c9c91346d8abd" >> $SDK_DIR/licenses/android-sdk-license
 
       - name: Run Buildozer
         run: |
