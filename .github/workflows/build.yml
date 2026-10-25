@@ -32,27 +32,31 @@ jobs:
           pip install --upgrade pip
           pip install cython==0.29.36 buildozer
 
-      - name: Setup Android SDK and Accept All Licenses
+      - name: Setup Android SDK, Command Line Tools & Licenses
         run: |
           SDK_DIR="/home/runner/.buildozer/android/platform/android-sdk"
           mkdir -p $SDK_DIR
           
-          # Скачиваем актуальные командные инструменты Android
           wget -q https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O /tmp/cmdtools.zip
           unzip -q /tmp/cmdtools.zip -d /tmp/cmdtools
           
           mkdir -p $SDK_DIR/cmdline-tools/latest
           mv /tmp/cmdtools/cmdline-tools/* $SDK_DIR/cmdline-tools/latest/
           
-          # Создаем симлинк для совместимости со старыми путями
           ln -sf $SDK_DIR/cmdline-tools/latest $SDK_DIR/tools
 
-          # Принудительно принимаем все лицензии через официальный sdkmanager
           yes | $SDK_DIR/cmdline-tools/latest/bin/sdkmanager --sdk_root=$SDK_DIR --licenses || true
 
       - name: Run Buildozer
         run: |
           buildozer -v android debug
+        env:
+          # Жестко перенаправляем пути на изолированный SDK и NDK от buildozer, игнорируя системные хоста
+          ANDROID_HOME: /home/runner/.buildozer/android/platform/android-sdk
+          ANDROID_SDK_ROOT: /home/runner/.buildozer/android/platform/android-sdk
+          ANDROID_NDK_HOME: /home/runner/.buildozer/android/platform/android-ndk-r25b
+          ANDROIDNDK: /home/runner/.buildozer/android/platform/android-ndk-r25b
+          ANDROID_NDK_ROOT: /home/runner/.buildozer/android/platform/android-ndk-r25b
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
